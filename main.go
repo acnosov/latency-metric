@@ -31,9 +31,12 @@ func main() {
 	stopCh := signals.SetupSignalHandler()
 	select {
 	case err := <-errCh:
-		log.Error("stop_service_by_error", zap.Error(err))
+		if err != nil {
+			log.Error("stop_service_by_error", zap.Error(err))
+		} else {
+			log.Info("Done")
+		}
 	case sig := <-stopCh:
 		log.Info("stop_service_by_os_signal", zap.String("signal", sig.String()))
 	}
-
 }

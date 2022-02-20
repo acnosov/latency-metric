@@ -1,3 +1,8 @@
 package signals
 
-//var shutdownSignals = []os.Signal{os.Interrupt, syscall.SIGKILL, syscall.SIGTERM, syscall.SIGINT}
+import (
+	"os"
+	"syscall"
+)
+
+var shutdownSignals = []os.Signal{os.Interrupt, syscall.SIGKILL, syscall.SIGTERM, syscall.SIGINT}

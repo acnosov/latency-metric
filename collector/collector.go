@@ -14,7 +14,6 @@ type Collector struct {
 	cfg       *config.Config
 	log       *zap.Logger
 	ctx       context.Context
-	errCh     chan error
 	ftxClient *ftxapi.Client
 	binClient *binance.Client
 }
@@ -31,11 +30,8 @@ func NewCollector(cfg *config.Config, log *zap.Logger, ctx context.Context) *Col
 		cfg:       cfg,
 		log:       log,
 		ctx:       ctx,
-		errCh:     make(chan error),
 		ftxClient: ftxClient,
 		binClient: binClient,
-		//binanceClient:         binance_ws.NewWsClient(cfg, log, ctx),
-		//binanceOtherSymbolMap: make(map[string]string),
 	}
 }
 func (c *Collector) BinMetric(wg *sync.WaitGroup) {
@@ -108,40 +104,6 @@ func (c *Collector) Run() error {
 	go c.BinMetric(&wg)
 	wg.Wait()
 	return nil
-	//c.BinMetric()
-	//c.BinMetric()
-	//c.BinMetric()
-	//go func() {
-	//	c.errCh <- c.binanceClient.Serve()
-	//}()
-	//go func() {
-	//	c.errCh <- c.ftxClient.Serve()
-	//}()
-	//var binanceCount, ftxCount int
-	//for {
-	//	select {
-	//	//case err := <-c.binanceClient.ReadErr:
-	//	//	c.log.Warn("binance_read_error", zap.Error(err))
-	//	//case event := <-c.binanceClient.EventCh:
-	//	//	binanceCount++
-	//	//	c.lastBinTime = event.ReceiveTime
-	//	//	c.binanceHandler(&event)
-	//	//case event := <-c.ftxClient.EventCh:
-	//	//	ftxCount++
-	//	//	c.fxtHandler(&event)
-	//	case <-c.ctx.Done():
-	//		return c.ctx.Err()
-	//	case err := <-c.errCh:
-	//		return err
-	//	case <-statTick:
-	//		c.log.Info("stat",
-	//			zap.Int("binance", binanceCount),
-	//			zap.Int("ftx", ftxCount),
-	//		)
-	//		binanceCount = 0
-	//		ftxCount = 0
-	//	}
-	//}
 }
 func avgLatency(list []time.Duration) time.Duration {
 	var total time.Duration

@@ -25,7 +25,6 @@ func main() {
 		errCh <- c.Run()
 	}()
 	defer func() {
-		log.Info("closing_services...")
 		cancel()
 		_ = log.Sync()
 	}()

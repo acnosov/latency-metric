@@ -25,7 +25,7 @@ type Config struct {
 		Secret string `json:"-"`
 	} `json:"binance"`
 	Ftx struct {
-		//Name string `json:"name" default:"ftx"`
+		Username string `json:"username"`
 		//WsHost string `default:"wss://ftx.com/ws/"`
 		Key    string `json:"-"`
 		Secret string `json:"-"`

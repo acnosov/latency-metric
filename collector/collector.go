@@ -47,10 +47,14 @@ func (c *Collector) BinMetric(wg *sync.WaitGroup) {
 	for i := 0; i < c.cfg.Count; i++ {
 		start := time.Now()
 		ctx, cancel := context.WithTimeout(c.ctx, 5*time.Second)
-		_, err := c.binClient.NewGetAccountService().Do(ctx)
+		resp, err := c.binClient.NewGetAccountService().Do(ctx)
 		cancel()
 		if err != nil {
 			c.log.Error("get_account_error", zap.Error(err))
+			continue
+		}
+		if resp.TakerCommission <= 0 {
+			c.log.Error("response_not_ok", zap.Any("resp", resp))
 			continue
 		}
 		latencyList = append(latencyList, time.Since(start))
@@ -78,10 +82,14 @@ func (c *Collector) FtxMetric(wg *sync.WaitGroup) {
 	for i := 0; i < c.cfg.Count; i++ {
 		start := time.Now()
 		ctx, cancel := context.WithTimeout(c.ctx, 5*time.Second)
-		_, err := c.ftxClient.NewGetAccountService().Do(ctx)
+		resp, err := c.ftxClient.NewGetAccountService().Do(ctx)
 		cancel()
 		if err != nil {
 			c.log.Error("get_account_error", zap.Error(err))
+			continue
+		}
+		if resp.Username != c.cfg.Ftx.Username {
+			c.log.Error("usernames_not_equal", zap.String("config_username", c.cfg.Ftx.Username), zap.String("response_username", resp.Username))
 			continue
 		}
 		latencyList = append(latencyList, time.Since(start))
@@ -97,7 +105,6 @@ func (c *Collector) FtxMetric(wg *sync.WaitGroup) {
 	c.log.Debug("latency_list", zap.Any("list", latencyList))
 }
 func (c *Collector) Run() error {
-	//statTick := time.Tick(time.Minute * 1)
 	var wg sync.WaitGroup
 	wg.Add(2)
 	go c.FtxMetric(&wg)
